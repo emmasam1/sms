@@ -125,9 +125,10 @@ const DashboardLayout = () => {
       >
         {/* Header fixed */}
         <Header
+        className="!bg-slate-900 !text-white"
           style={{
             padding: "0 16px",
-            background: colorBgContainer,
+            // background: colorBgContainer,
             position: "fixed",
             top: 0,
             left: collapsed ? 80 : 200,

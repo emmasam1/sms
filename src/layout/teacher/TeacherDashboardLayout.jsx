@@ -53,6 +53,7 @@ const routeTitles = {
   "/teacher/dashboard/students-progress": "Students Progress",
   // "/teacher/dashboard/results": "Results",
   "/teacher/dashboard/settings": "Account Settings",
+  "/teacher/dashboard/profile": "Profile",
 };
 
 const TeacherDashboardLayout = () => {
@@ -111,9 +112,10 @@ const TeacherDashboardLayout = () => {
         style={{ marginLeft: collapsed ? 80 : 200, transition: "all 0.2s" }}
       >
         <Header
+        className="!bg-slate-900 !text-white"
           style={{
             padding: "0 16px",
-            background: colorBgContainer,
+            // background: colorBgContainer,
             position: "fixed",
             top: 0,
             left: collapsed ? 80 : 200,
