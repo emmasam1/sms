@@ -14,16 +14,19 @@ import {
   Upload,
   InputNumber,
   message,
+  Tooltip,
 } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
   BookOutlined,
   SolutionOutlined,
-  FileTextOutlined,
+  PlusCircleOutlined,
   UploadOutlined,
   KeyOutlined,
   DollarOutlined,
+  MessageOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 
 const { Title } = Typography;
@@ -254,6 +257,17 @@ const Dashboard = () => {
     },
   ];
 
+  const handleGeneratePIN = () =>
+    message.success("New PINs generated successfully!");
+  const handleCreateClass = () =>
+    message.success("Class creation modal coming soon!");
+  const handleViewMessages = () =>
+    message.info("Redirecting to message center...");
+  const handleViewReports = () =>
+    message.info("Generating school performance report...");
+  const handleManageTeachers = () =>
+    message.info("Opening teacher management panel...");
+
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
@@ -321,19 +335,45 @@ const Dashboard = () => {
       <Card className="shadow-sm rounded-xl !mb-3">
         <Title level={4}>Quick Actions</Title>
         <div className="flex flex-wrap gap-3 mt-3">
-          <Button
-            type="primary"
-            icon={<FileTextOutlined />}
-            onClick={() => setIsUploadOpen(true)}
-          >
-            Upload Result
-          </Button>
-          <Button type="default" icon={<KeyOutlined />}>
-            Generate PIN
-          </Button>
-          <Button type="dashed" icon={<BookOutlined />}>
-            Create Class
-          </Button>
+          <Tooltip title="Upload class or student result">
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={() => setIsUploadOpen(true)}
+            >
+              Upload Result
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Generate parent access PINs">
+            <Button icon={<KeyOutlined />} onClick={handleGeneratePIN}>
+              Generate PIN
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Create new class">
+            <Button icon={<PlusCircleOutlined />} onClick={handleCreateClass}>
+              Create Class
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="View message center">
+            <Button icon={<MessageOutlined />} onClick={handleViewMessages}>
+              Messages
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Manage teacher profiles">
+            <Button icon={<SolutionOutlined />} onClick={handleManageTeachers}>
+              Manage Teachers
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="View performance analytics">
+            <Button icon={<BarChartOutlined />} onClick={handleViewReports}>
+              Reports
+            </Button>
+          </Tooltip>
         </div>
       </Card>
 

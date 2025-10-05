@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   DashboardOutlined,
   BookOutlined,
-  TeamOutlined,
-  FileTextOutlined,
   SettingOutlined,
   LogoutOutlined,
   UserOutlined,

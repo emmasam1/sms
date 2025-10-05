@@ -13,6 +13,8 @@ import MyClasses from "./pages/teacher/class/MyClasses";
 import Setting from "./pages/teacher/settings/Setting";
 import TeacherProfile from "./pages/teacher/profile/TeacherProfile";
 import AdminMessage from "./pages/admin/message/AdminMessage ";
+import ParentHome from "./pages/parent/ParentHome";
+import Result from "./pages/parent/Result";
 
 const App = () => {
   return (
@@ -34,6 +36,9 @@ const App = () => {
         <Route path="settings" element={<Setting />} />
         <Route path="profile" element={<TeacherProfile />} />
       </Route>
+
+      <Route path="/home" element={<ParentHome />} />
+      <Route path="/result" element={<Result />} />
     </Routes>
   );
 };

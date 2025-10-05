@@ -26,7 +26,7 @@ const Login = () => {
     if (activeTab === "parent") {
       if (values.pin === "123456") {
         message.success("Parent login successful!");
-        navigate("/parent/dashboard");
+        navigate("/home");
       } else {
         message.error("Invalid parent PIN");
       }

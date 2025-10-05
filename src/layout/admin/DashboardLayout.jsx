@@ -22,16 +22,13 @@ import { Outlet, useLocation, useNavigate } from "react-router";
 
 const menu_items = [
   {
-    key: "2",
+    key: "profile",
     label: "Profile",
-    extra: "⌘P",
   },
-
   {
-    key: "4",
+    key: "logout",
     label: "Logout",
     icon: <LogoutOutlined />,
-    extra: "⌘S",
   },
 ];
 
@@ -90,7 +87,7 @@ const DashboardLayout = () => {
       navigate("/");
     }
     if (key === "profile") {
-      navigate("/teacher/dashboard/profile");
+      navigate("/admin/dashboard/profile");
     }
   };
 
