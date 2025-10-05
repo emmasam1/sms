@@ -84,6 +84,16 @@ const DashboardLayout = () => {
   // Dynamic Page Title
   const pageTitle = routeTitles[location.pathname] || "Dashboard";
 
+  const handleMenuClick = ({ key }) => {
+    if (key === "logout") {
+      // handle logout
+      navigate("/");
+    }
+    if (key === "profile") {
+      navigate("/teacher/dashboard/profile");
+    }
+  };
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {/* Sidebar fixed */}
@@ -133,7 +143,7 @@ const DashboardLayout = () => {
             {pageTitle}
           </h1>
 
-          <Dropdown menu={{ items: menu_items }}>
+          <Dropdown menu={{ items: menu_items, onClick: handleMenuClick  }}>
             <a onClick={(e) => e.preventDefault()}>
               <Space>
                 <Avatar size="large" icon={<UserOutlined />} />

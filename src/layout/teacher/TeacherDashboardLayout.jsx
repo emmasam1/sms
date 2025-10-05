@@ -77,7 +77,7 @@ const TeacherDashboardLayout = () => {
       navigate("/");
     }
     if (key === "profile") {
-      navigate("/teacher/dashboard/profile");
+      // navigate("/teacher/dashboard/profile");
     }
   };
 
