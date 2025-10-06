@@ -178,7 +178,6 @@ const AdminMessage = () => {
       <Modal
         title={
           <span className="flex items-center gap-2">
-            <SendOutlined className="text-blue-500" />
             {editingMessage ? "Edit Message" : "Send Message"}
           </span>
         }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   Row,
@@ -7,14 +7,8 @@ import {
   Button,
   Table,
   Tag,
-  Modal,
-  Form,
-  Select,
-  Radio,
-  Upload,
-  InputNumber,
-  message,
   Tooltip,
+  message,
 } from "antd";
 import {
   UserOutlined,
@@ -22,53 +16,30 @@ import {
   BookOutlined,
   SolutionOutlined,
   PlusCircleOutlined,
-  UploadOutlined,
   KeyOutlined,
   DollarOutlined,
   MessageOutlined,
   BarChartOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 
+import UploadResult from "../../../components/uploadresult/UploadResult";
+import GeneratePin from "../../../components/generatepin/GeneratePin";
+import CreateClass from "../../../components/createclass/CreateClass";
+import CreateMessage from "../../../components/message/CreateMessage";
+
 const { Title } = Typography;
-const { Option } = Select;
 
 const Dashboard = () => {
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
-  const [mode, setMode] = useState("class"); // class | individual
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [form] = Form.useForm();
-
   const totalPins = 1240;
   const revenue = 356000;
 
-  // Dummy subjects
-  const subjects = ["Mathematics", "English", "Biology", "Chemistry"];
+  // Modal states
+  const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
+  const [isPinModalVisible, setIsPinModalVisible] = useState(false);
+  const [isCreateClassOpen, setIsCreateClassOpen] = useState(false);
+  const [sendMessage, setSendMessage] = useState(false);
 
-  // Scores state
-  const [studentScores, setStudentScores] = useState(
-    subjects.map((subj) => ({
-      key: subj,
-      subject: subj,
-      firstTest: 0,
-      secondTest: 0,
-      assignment: 0,
-      practical: 0,
-      exam: 0,
-      total: 0,
-      average: 0,
-    }))
-  );
-
-  // Dummy class/student data
-  const classes = ["JSS1", "JSS2", "JSS3"];
-  const students = {
-    JSS1: ["John Doe", "Mary Jane", "Paul Obi"],
-    JSS2: ["Tola Ahmed", "Chioma Eze"],
-    JSS3: ["Kingsley Okoro", "Grace Ade"],
-  };
-
-  // Example data for the table
   const recentActivities = [
     {
       key: "1",
@@ -86,14 +57,14 @@ const Dashboard = () => {
     },
     {
       key: "3",
-      action: "Result Uploaded for SS3",
-      actor: "Teacher",
+      action: "PIN Generated for Parents",
+      actor: "Admin",
       time: "1 hour ago",
       status: "success",
     },
     {
       key: "4",
-      action: "PIN Generated",
+      action: "Message Sent to Teachers",
       actor: "Admin",
       time: "Yesterday",
       status: "warning",
@@ -101,21 +72,9 @@ const Dashboard = () => {
   ];
 
   const columns = [
-    {
-      title: "Action",
-      dataIndex: "action",
-      key: "action",
-    },
-    {
-      title: "By",
-      dataIndex: "actor",
-      key: "actor",
-    },
-    {
-      title: "Time",
-      dataIndex: "time",
-      key: "time",
-    },
+    { title: "Action", dataIndex: "action", key: "action" },
+    { title: "By", dataIndex: "actor", key: "actor" },
+    { title: "Time", dataIndex: "time", key: "time" },
     {
       title: "Status",
       key: "status",
@@ -131,246 +90,128 @@ const Dashboard = () => {
     },
   ];
 
-  // Utility function to calculate grade
-  const getGrade = (total, maxScore = 100) => {
-    const percent = (total / maxScore) * 100;
+  // Handlers
+  const  handleManageTeachers = () => message.info("Opening message center...");
+  const handleViewReports = () => message.info("Generating reports...");
 
-    if (percent >= 70) return "A";
-    if (percent >= 60) return "B";
-    if (percent >= 50) return "C";
-    if (percent >= 45) return "D";
-    if (percent >= 40) return "E";
-    return "F";
-  };
+  // Modals
+  const handleUploadResult = () => setIsUploadModalVisible(true);
+  const handleCloseUploadModal = () => setIsUploadModalVisible(false);
 
-  // Handle score change
-  const handleScoreChange = (key, field, value) => {
-    const updatedScores = studentScores.map((row) => {
-      if (row.key === key) {
-        const newRow = { ...row, [field]: value || 0 };
+  const handleGeneratePIN = () => setIsPinModalVisible(true);
+  const handleClosePinModal = () => setIsPinModalVisible(false);
 
-        // Calculate total from all components
-        const total =
-          (newRow.firstTest || 0) +
-          (newRow.secondTest || 0) +
-          (newRow.assignment || 0) +
-          (newRow.practical || 0) +
-          (newRow.exam || 0);
+  const handleCreateClass = () => setIsCreateClassOpen(true);
+  const handleCloseCreateClass = () => setIsCreateClassOpen(false);
 
-        newRow.total = total;
-        newRow.average = parseFloat((total / 5).toFixed(2));
-
-        // ✅ Grade must be based on TOTAL out of 100
-        newRow.grade = getGrade(total, 100);
-
-        return newRow;
-      }
-      return row;
-    });
-    setStudentScores(updatedScores);
-  };
-
-  // Score entry table columns
-  const scoreColumns = [
-    { title: "Subject", dataIndex: "subject", key: "subject" },
-    {
-      title: "First Test",
-      dataIndex: "firstTest",
-      render: (_, record) => (
-        <InputNumber
-          min={0}
-          max={20}
-          value={record.firstTest}
-          onChange={(val) => handleScoreChange(record.key, "firstTest", val)}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
-    {
-      title: "Second Test",
-      dataIndex: "secondTest",
-      render: (_, record) => (
-        <InputNumber
-          min={0}
-          max={20}
-          value={record.secondTest}
-          onChange={(val) => handleScoreChange(record.key, "secondTest", val)}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
-    {
-      title: "Assignment",
-      dataIndex: "assignment",
-      render: (_, record) => (
-        <InputNumber
-          min={0}
-          max={10}
-          value={record.assignment}
-          onChange={(val) => handleScoreChange(record.key, "assignment", val)}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
-    {
-      title: "Practical",
-      dataIndex: "practical",
-      render: (_, record) => (
-        <InputNumber
-          min={0}
-          max={10}
-          value={record.practical}
-          onChange={(val) => handleScoreChange(record.key, "practical", val)}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
-    {
-      title: "Exam",
-      dataIndex: "exam",
-      render: (_, record) => (
-        <InputNumber
-          min={0}
-          max={40}
-          value={record.exam}
-          onChange={(val) => handleScoreChange(record.key, "exam", val)}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
-    { title: "Total", dataIndex: "total", key: "total" },
-    { title: "Average", dataIndex: "average", key: "average" },
-    {
-      title: "Grade",
-      dataIndex: "grade",
-      key: "grade",
-      render: (grade) => {
-        const colors = {
-          A: "green",
-          B: "blue",
-          C: "orange",
-          D: "volcano",
-          F: "red",
-        };
-        return <Tag color={colors[grade]}>{grade}</Tag>;
-      },
-    },
-  ];
-
-  const handleGeneratePIN = () =>
-    message.success("New PINs generated successfully!");
-  const handleCreateClass = () =>
-    message.success("Class creation modal coming soon!");
-  const handleViewMessages = () =>
-    message.info("Redirecting to message center...");
-  const handleViewReports = () =>
-    message.info("Generating school performance report...");
-  const handleManageTeachers = () =>
-    message.info("Opening teacher management panel...");
+  const handleViewMessages = () => setSendMessage(true);
+  const handleCloseMessageModal = () => setSendMessage(false);
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
+      {/* Stats Section */}
       <Row gutter={[16, 16]}>
-        {" "}
-        {/* gutter={[horizontal, vertical]} */}
-        <Col xs={24} sm={12} md={6}>
-          <Card className="shadow-md rounded-xl">
-            <div className="flex items-center space-x-4">
-              <UserOutlined className="text-3xl !text-blue-500" />
-              <div>
-                <p className="text-gray-500">Students</p>
-                <p className="text-xl font-bold">1,245</p>
+        {[
+          {
+            icon: <UserOutlined className="text-3xl !text-blue-500" />,
+            label: "Students",
+            value: "1,245",
+          },
+          {
+            icon: <TeamOutlined className="text-3xl !text-green-500" />,
+            label: "Teachers",
+            value: "58",
+          },
+          {
+            icon: <BookOutlined className="text-3xl !text-purple-500" />,
+            label: "Classes",
+            value: "36",
+          },
+          {
+            icon: <KeyOutlined className="text-3xl !text-yellow-500" />,
+            label: "Total PINs",
+            value: totalPins,
+          },
+          {
+            icon: <DollarOutlined className="text-3xl !text-emerald-500" />,
+            label: "Revenue",
+            value: `₦${revenue.toLocaleString()}`,
+          },
+        ].map((item, i) => (
+          <Col xs={24} sm={12} md={6} key={i}>
+            <Card className="shadow-md rounded-xl hover:shadow-lg transition">
+              <div className="flex items-center space-x-4">
+                {item.icon}
+                <div>
+                  <p className="text-gray-500">{item.label}</p>
+                  <p className="text-xl font-bold">{item.value}</p>
+                </div>
               </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card className="shadow-md rounded-xl">
-            <div className="flex items-center space-x-4">
-              <TeamOutlined className="text-3xl !text-green-500" />
-              <div>
-                <p className="text-gray-500">Teachers</p>
-                <p className="text-xl font-bold">58</p>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card className="shadow-md rounded-xl">
-            <div className="flex items-center space-x-4">
-              <BookOutlined className="text-3xl !text-purple-500" />
-              <div>
-                <p className="text-gray-500">Classes</p>
-                <p className="text-xl font-bold">36</p>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card className="shadow-md rounded-xl">
-            <div className="flex items-center space-x-4">
-              <KeyOutlined className="text-3xl !text-blue-500" />
-              <div>
-                <p className="text-gray-500">Total PINs Generated</p>
-                <p className="text-xl font-bold">{totalPins}</p>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card className="shadow-md rounded-xl">
-            <div className="flex items-center space-x-4">
-              <DollarOutlined className="text-3xl !text-green-500" />
-              <div>
-                <p className="text-gray-500">Revenue</p>
-                <p className="text-xl font-bold">₦{revenue.toLocaleString()}</p>
-              </div>
-            </div>
-          </Card>
-        </Col>
+            </Card>
+          </Col>
+        ))}
       </Row>
 
       {/* Quick Actions */}
       <Card className="shadow-sm rounded-xl !mb-3">
         <Title level={4}>Quick Actions</Title>
         <div className="flex flex-wrap gap-3 mt-3">
-          <Tooltip title="Upload class or student result">
+          <Tooltip title="Upload student results">
             <Button
-              type="primary"
               icon={<UploadOutlined />}
-              onClick={() => setIsUploadOpen(true)}
+              onClick={handleUploadResult}
+              className="!bg-blue-500 hover:!bg-blue-600 !text-white !border-none"
             >
               Upload Result
             </Button>
           </Tooltip>
 
           <Tooltip title="Generate parent access PINs">
-            <Button icon={<KeyOutlined />} onClick={handleGeneratePIN}>
+            <Button
+              icon={<KeyOutlined />}
+              onClick={handleGeneratePIN}
+              className="!bg-yellow-500 hover:!bg-yellow-600 !text-white !border-none"
+            >
               Generate PIN
             </Button>
           </Tooltip>
 
-          <Tooltip title="Create new class">
-            <Button icon={<PlusCircleOutlined />} onClick={handleCreateClass}>
+          <Tooltip title="Create a new class">
+            <Button
+              icon={<PlusCircleOutlined />}
+              onClick={handleCreateClass}
+              className="!bg-green-500 hover:!bg-green-600 !text-white !border-none"
+            >
               Create Class
             </Button>
           </Tooltip>
 
-          <Tooltip title="View message center">
-            <Button icon={<MessageOutlined />} onClick={handleViewMessages}>
+          <Tooltip title="Manage messages and announcements">
+            <Button
+              icon={<MessageOutlined />}
+              onClick={handleViewMessages}
+              className="!bg-indigo-500 hover:!bg-indigo-600 !text-white !border-none"
+            >
               Messages
             </Button>
           </Tooltip>
 
-          <Tooltip title="Manage teacher profiles">
-            <Button icon={<SolutionOutlined />} onClick={handleManageTeachers}>
+          <Tooltip title="Manage teacher accounts">
+            <Button
+              icon={<SolutionOutlined />}
+              onClick={handleManageTeachers}
+              className="!bg-orange-500 hover:!bg-orange-600 !text-white !border-none"
+            >
               Manage Teachers
             </Button>
           </Tooltip>
 
-          <Tooltip title="View performance analytics">
-            <Button icon={<BarChartOutlined />} onClick={handleViewReports}>
+          <Tooltip title="View school reports">
+            <Button
+              icon={<BarChartOutlined />}
+              onClick={handleViewReports}
+              className="!bg-gray-600 hover:!bg-gray-700 !text-white !border-none"
+            >
               Reports
             </Button>
           </Tooltip>
@@ -383,7 +224,6 @@ const Dashboard = () => {
         <Table
           columns={columns}
           dataSource={recentActivities}
-          //   pagination={false}
           bordered
           size="small"
           pagination={{
@@ -391,125 +231,15 @@ const Dashboard = () => {
             position: ["bottomCenter"],
             className: "custom-pagination",
           }}
-          className="custom-table"
           scroll={{ x: "max-content" }}
         />
       </Card>
 
-      {/* Upload Result Modal */}
-      <Modal
-        title="Upload Result"
-        open={isUploadOpen}
-        onCancel={() => setIsUploadOpen(false)}
-        footer={null}
-        destroyOnClose
-      >
-        <Form
-          layout="vertical"
-          onFinish={(values) => {
-            if (mode === "class") {
-              message.success(`CSV uploaded for ${values.class}`);
-              setIsUploadOpen(false);
-            } else {
-              setSelectedStudent(values.student);
-              setIsUploadOpen(false);
-              setIsScoreModalOpen(true);
-            }
-          }}
-        >
-          <Form.Item label="">
-            <Radio.Group value={mode} onChange={(e) => setMode(e.target.value)}>
-              <Radio value="class">Whole Class</Radio>
-              <Radio value="individual">Individual Student</Radio>
-            </Radio.Group>
-          </Form.Item>
-
-          <Form.Item
-            label="Session"
-            name="session"
-            rules={[{ required: true, message: "Please select session" }]}
-          >
-            <Select placeholder="Select Session">
-              <Option value="2023/2024">2023/2024</Option>
-              <Option value="2024/2025">2024/2025</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Class"
-            name="class"
-            rules={[{ required: true, message: "Please select class" }]}
-          >
-            <Select placeholder="Select Class">
-              {classes.map((cls) => (
-                <Option key={cls} value={cls}>
-                  {cls}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          {mode === "individual" && (
-            <Form.Item
-              label="Student"
-              name="student"
-              rules={[{ required: true, message: "Please select student" }]}
-            >
-              <Select placeholder="Select Student">
-                {Object.values(students)
-                  .flat()
-                  .map((std) => (
-                    <Option key={std} value={std}>
-                      {std}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          )}
-
-          {mode === "class" && (
-            <Form.Item
-              label="CSV File"
-              name="file"
-              rules={[{ required: true, message: "Please upload result file" }]}
-            >
-              <Upload beforeUpload={() => false} accept=".csv" maxCount={1}>
-                <Button icon={<UploadOutlined />}>Select File</Button>
-              </Upload>
-            </Form.Item>
-          )}
-
-          <div className="flex justify-end gap-3">
-            <Button onClick={() => setIsUploadOpen(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit">
-              {mode === "class" ? "Upload" : "Next"}
-            </Button>
-          </div>
-        </Form>
-      </Modal>
-
-      {/* Individual Score Entry Modal */}
-      <Modal
-        title={`Enter Scores for ${selectedStudent}`}
-        open={isScoreModalOpen}
-        closable={false}
-        onCancel={() => setIsScoreModalOpen(false)}
-        onOk={() => {
-          console.log("Submitted Scores:", studentScores);
-          message.success(`Scores saved for ${selectedStudent}`);
-          setIsScoreModalOpen(false);
-        }}
-        width={900}
-      >
-        <Table
-          columns={scoreColumns}
-          dataSource={studentScores}
-          pagination={false}
-          rowKey="key"
-          size="small"
-          bordered
-        />
-      </Modal>
+      {/* Modals */}
+      <UploadResult open={isUploadModalVisible} onClose={handleCloseUploadModal}/>
+      <GeneratePin open={isPinModalVisible} onClose={handleClosePinModal} />
+      <CreateClass open={isCreateClassOpen} onClose={handleCloseCreateClass} />
+      <CreateMessage open={sendMessage} onClose={handleCloseMessageModal} />
     </div>
   );
 };
