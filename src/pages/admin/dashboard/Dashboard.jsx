@@ -186,7 +186,7 @@ const Dashboard = () => {
             </Button>
           </Tooltip>
 
-          <Tooltip title="Manage messages and announcements">
+          <Tooltip title="messages and announcements">
             <Button
               icon={<MessageOutlined />}
               onClick={handleViewMessages}

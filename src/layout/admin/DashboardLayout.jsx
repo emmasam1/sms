@@ -19,6 +19,7 @@ import {
   Avatar,
 } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router";
+// import logo from "../../assets/logo.jpg"
 
 const menu_items = [
   {
@@ -107,6 +108,9 @@ const DashboardLayout = () => {
           height: "100vh",
         }}
       >
+        {/* <div className="flex justify-center mb-6 p-5">
+            <img src={logo} alt="" className="w-10"/>
+          </div> */}
         <Menu
           className="!bg-slate-900 !text-white border-r-0"
           selectedKeys={[location.pathname]}
@@ -137,6 +141,7 @@ const DashboardLayout = () => {
             justifyContent: "space-between",
           }}
         >
+          
           <h1 style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
             {pageTitle}
           </h1>

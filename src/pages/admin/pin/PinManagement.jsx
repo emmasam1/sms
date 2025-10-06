@@ -137,7 +137,7 @@ const PinManagement = () => {
           }}
         >
           {/* Mode Switch */}
-          <Form.Item label="Generation Mode">
+          <Form.Item label="">
             <Radio.Group
               value={mode}
               onChange={(e) => setMode(e.target.value)}

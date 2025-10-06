@@ -452,7 +452,9 @@ const Student = () => {
           </Row>
 
           {/* PARENT INFO */}
-          <Title level={5} className="mt-4 mb-2 text-center"></Title>
+           <Title level={5} className="mb-2 text-center">
+            Parent Information
+          </Title>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
