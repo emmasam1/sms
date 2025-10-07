@@ -15,6 +15,7 @@ import TeacherProfile from "./pages/teacher/profile/TeacherProfile";
 import AdminMessage from "./pages/admin/message/AdminMessage ";
 import ParentHome from "./pages/parent/ParentHome";
 import Result from "./pages/parent/Result";
+import ViewAttendance from "./pages/parent/ViewAttendance";
 
 const App = () => {
   return (
@@ -38,7 +39,8 @@ const App = () => {
       </Route>
 
       <Route path="/home" element={<ParentHome />} />
-      <Route path="/result" element={<Result />} />
+      <Route path="/parent/result" element={<Result />} />
+      <Route path="/parent/attendance" element={<ViewAttendance />} />
     </Routes>
   );
 };

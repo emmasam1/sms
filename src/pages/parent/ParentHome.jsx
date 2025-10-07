@@ -101,7 +101,7 @@ const ParentDashboard = () => {
                 icon={<FileSearchOutlined />}
                 type="primary"
                 className="bg-blue-600 mt-2"
-                 onClick={() => navigate("/result")}
+                 onClick={() => navigate("/parent/result")}
               >
                 View Result
               </Button>
@@ -124,7 +124,7 @@ const ParentDashboard = () => {
             <Button
               type="link"
               className="mt-2 text-blue-500"
-              onClick={() => navigate("/parent/results")}
+              onClick={() => navigate("/parent/result")}
             >
               View Full Report →
             </Button>
@@ -182,7 +182,7 @@ const ParentDashboard = () => {
             <Button
               type="link"
               className="mt-3 text-blue-500"
-              onClick={() => navigate("/parent/messages")}
+              // onClick={() => navigate("/parent/messages")}
             >
               View Inbox →
             </Button>
