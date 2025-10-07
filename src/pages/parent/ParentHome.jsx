@@ -175,9 +175,9 @@ const ParentDashboard = () => {
             </Badge>
             <div className="mt-4 space-y-2">
               <Text>
-                <strong>Teacher:</strong> Mrs. Ada (Class Teacher)
+                <strong>School Admin:</strong> Mrs. Ada
               </Text>
-              <p>"David has shown great improvement this term!"</p>
+              <p>"This term's resumption date is January 5th."</p>
             </div>
             <Button
               type="link"

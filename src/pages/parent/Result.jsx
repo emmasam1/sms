@@ -175,7 +175,7 @@ const ParentResult = () => {
 
           <div className="mt-6 text-sm">
             <p><b>Teacher’s Comment:</b> Keep up the good work.</p>
-            <p><b>Principal’s Remark:</b> Excellent performance overall.</p>
+            {/* <p><b>Principal’s Remark:</b> Excellent performance overall.</p> */}
           </div>
         </div>
       </Card>
