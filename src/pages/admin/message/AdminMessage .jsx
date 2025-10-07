@@ -17,6 +17,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   PlusCircleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -28,21 +29,42 @@ const AdminMessage = () => {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMessage, setEditingMessage] = useState(null);
+  const [recipientType, setRecipientType] = useState("teachers");
+  const [viewingMessage, setViewingMessage] = useState(null);
 
-  // Dummy recipients (replace with API later)
-  const recipients = [
-    { id: "all", name: "All Teachers" },
+  // Dummy recipient data (replace with API later)
+  const teacherRecipients = [
+    { id: "all_teachers", name: "All Teachers" },
     { id: "teacher1", name: "Mr. John Doe" },
     { id: "teacher2", name: "Ms. Jane Smith" },
     { id: "teacher3", name: "Mr. Samuel Okon" },
   ];
 
+  const parentRecipients = [
+    { id: "all_parents", name: "All Parents" },
+    { id: "parent1", name: "Mrs. Johnson (Sarah Johnson's Parent)" },
+    { id: "parent2", name: "Mr. Daniel (Michael Daniel's Parent)" },
+    { id: "parent3", name: "Mrs. Grace (Ada Grace's Parent)" },
+  ];
+
+  const getRecipients = () => {
+    if (recipientType === "parents") return parentRecipients;
+    if (recipientType === "teachers") return teacherRecipients;
+    return [
+      { id: "all_users", name: "All Users" },
+      ...teacherRecipients.slice(1),
+      ...parentRecipients.slice(1),
+    ];
+  };
+
   // Handle send / edit
   const handleSend = (values) => {
     setLoading(true);
+    const currentRecipients = getRecipients();
+
     setTimeout(() => {
       if (editingMessage) {
-        // Update existing
+        // Update existing message
         setMessages((prev) =>
           prev.map((msg) =>
             msg.key === editingMessage.key
@@ -51,9 +73,13 @@ const AdminMessage = () => {
                   title: values.title,
                   content: values.content,
                   recipient:
-                    values.recipient === "all"
+                    values.recipient === "all_users"
                       ? "All Users"
-                      : recipients.find((r) => r.id === values.recipient)?.name,
+                      : currentRecipients.find((r) => r.id === values.recipient)
+                          ?.name,
+                  recipientType:
+                    recipientType.charAt(0).toUpperCase() +
+                    recipientType.slice(1),
                   date: new Date().toLocaleString(),
                 }
               : msg
@@ -61,16 +87,19 @@ const AdminMessage = () => {
         );
         message.success("Message updated successfully!");
       } else {
-        // Add new
+        // Add new message
         setMessages((prev) => [
           {
             key: Date.now(),
             title: values.title,
             content: values.content,
             recipient:
-              values.recipient === "all"
+              values.recipient === "all_users"
                 ? "All Users"
-                : recipients.find((r) => r.id === values.recipient)?.name,
+                : currentRecipients.find((r) => r.id === values.recipient)
+                    ?.name,
+            recipientType:
+              recipientType.charAt(0).toUpperCase() + recipientType.slice(1),
             date: new Date().toLocaleString(),
           },
           ...prev,
@@ -87,11 +116,13 @@ const AdminMessage = () => {
 
   const handleEdit = (record) => {
     setEditingMessage(record);
+    setRecipientType(record.recipientType.toLowerCase());
     form.setFieldsValue({
       title: record.title,
       content: record.content,
       recipient:
-        recipients.find((r) => r.name === record.recipient)?.id || "all",
+        getRecipients().find((r) => r.name === record.recipient)?.id ||
+        "all_users",
     });
     setModalVisible(true);
   };
@@ -101,8 +132,17 @@ const AdminMessage = () => {
     message.success("Message deleted successfully!");
   };
 
+  const handleView = (record) => {
+    setViewingMessage(record);
+  };
+
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },
+    {
+      title: "Recipient Type",
+      dataIndex: "recipientType",
+      key: "recipientType",
+    },
     { title: "Recipient", dataIndex: "recipient", key: "recipient" },
     {
       title: "Content",
@@ -117,6 +157,11 @@ const AdminMessage = () => {
       width: 120,
       render: (_, record) => (
         <Space>
+          <Button
+            icon={<EyeOutlined />}
+            size="small"
+            onClick={() => handleView(record)}
+          />
           <Button
             icon={<EditOutlined />}
             size="small"
@@ -149,6 +194,7 @@ const AdminMessage = () => {
               onClick={() => {
                 setEditingMessage(null);
                 form.resetFields();
+                setRecipientType("teachers");
                 setModalVisible(true);
               }}
               className="bg-blue-600 hover:bg-blue-700"
@@ -182,19 +228,42 @@ const AdminMessage = () => {
           </span>
         }
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+          setModalVisible(false);
+          form.resetFields();
+        }}
         footer={null}
         centered
         destroyOnClose
       >
         <Form layout="vertical" form={form} onFinish={handleSend}>
+          {/* Recipient Type */}
+          <Form.Item
+            label="Recipient Type"
+            required
+            tooltip="Select who should receive this message"
+          >
+            <Select
+              value={recipientType}
+              onChange={(value) => {
+                setRecipientType(value);
+                form.resetFields(["recipient"]);
+              }}
+            >
+              <Option value="teachers">Teachers</Option>
+              <Option value="parents">Parents</Option>
+              <Option value="all">All Users</Option>
+            </Select>
+          </Form.Item>
+
+          {/* Recipient */}
           <Form.Item
             name="recipient"
             label="Recipient"
-            rules={[{ required: true, message: "Please select recipient" }]}
+            rules={[{ required: true, message: "Please select a recipient" }]}
           >
             <Select placeholder="Select recipient">
-              {recipients.map((r) => (
+              {getRecipients().map((r) => (
                 <Option key={r.id} value={r.id}>
                   {r.name}
                 </Option>
@@ -213,14 +282,23 @@ const AdminMessage = () => {
           <Form.Item
             name="content"
             label="Message Content"
-            rules={[{ required: true, message: "Please enter message content" }]}
+            rules={[
+              { required: true, message: "Please enter message content" },
+            ]}
           >
             <TextArea rows={5} placeholder="Write your message here..." />
           </Form.Item>
 
           <Form.Item className="text-right">
             <Space>
-              <Button onClick={() => setModalVisible(false)}>Cancel</Button>
+              <Button
+                onClick={() => {
+                  setModalVisible(false);
+                  form.resetFields();
+                }}
+              >
+                Cancel
+              </Button>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -233,6 +311,42 @@ const AdminMessage = () => {
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* View message */}
+      <Modal
+        title={
+          <span className="flex items-center gap-2">
+            <EyeOutlined /> View Message
+          </span>
+        }
+        open={!!viewingMessage}
+        onCancel={() => setViewingMessage(null)}
+        footer={[
+          <Button key="close" onClick={() => setViewingMessage(null)}>
+            Close
+          </Button>,
+        ]}
+        centered
+      >
+        {viewingMessage && (
+          <div>
+            <p>
+              <strong>Title:</strong> {viewingMessage.title}
+            </p>
+            <p>
+              <strong>Recipient:</strong> {viewingMessage.recipient}
+            </p>
+            <p>
+              <strong>Date:</strong> {viewingMessage.date}
+            </p>
+            <p>
+              <strong>Content:</strong>
+              <br />
+              {viewingMessage.content}
+            </p>
+          </div>
+        )}
       </Modal>
     </div>
   );
