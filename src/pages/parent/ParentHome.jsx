@@ -182,7 +182,7 @@ const ParentDashboard = () => {
             <Button
               type="link"
               className="mt-3 text-blue-500"
-              // onClick={() => navigate("/parent/messages")}
+              onClick={() => navigate("/parent/messages")}
             >
               View Inbox →
             </Button>
